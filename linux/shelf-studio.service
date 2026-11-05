@@ -1,6 +1,6 @@
 # Template: linux/install.sh fills in the @...@ values for this clone.
 [Unit]
-Description=Product Studio local image workspace
+Description=Shelf Studio local image workspace
 After=network.target
 
 [Service]

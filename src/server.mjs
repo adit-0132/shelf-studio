@@ -6,7 +6,7 @@ import { promisify } from 'node:util';
 import { randomUUID, randomBytes } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { scenes, buildPrompt } from './scenes.mjs';
+import { scenes, angles, modes, sceneSet, buildPrompt } from './scenes.mjs';
 import { makeZip } from './zip.mjs';
 import { validateListing, enrichListing, listingText, listingWarnings, listingInstructions } from './listing.mjs';
 import { knowledgeSummary, createKnowledgeSnapshot, saveWritingExample, exampleCount } from './knowledge.mjs';
@@ -78,7 +78,7 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
   }
   async function outputFiles(job) {
     const outputs = [];
-    for (const scene of scenes) {
+    for (const scene of sceneSet(job.mode)) {
       const file = path.join(dataDir, job.id, 'outputs', `${scene.id}.png`);
       try {
         // Serve only actual files within this job, never symlinked external paths.
@@ -110,7 +110,7 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
   }
   async function publicJob(job) {
     const outputs = await outputFiles(job), listing = await readListing(job);
-    return { listing, writingExample: !!job.writingExample, knowledgeVersion: job.knowledgeVersion, warnings: listing ? listingWarnings(listing) : [], id: job.id, createdAt: job.createdAt, status: job.status, message: job.message, notes: job.notes, product: job.product || validateProduct(null),
+    return { listing, mode: job.mode || 'scenes', writingExample: !!job.writingExample, knowledgeVersion: job.knowledgeVersion, warnings: listing ? listingWarnings(listing) : [], id: job.id, createdAt: job.createdAt, status: job.status, message: job.message, notes: job.notes, product: job.product || validateProduct(null),
       inputs: job.inputs.map(i => ({ name: i.name, url: `/files/${job.id}/inputs/${i.file}` })),
       outputs: outputs.map(({ file, prompt, ...s }) => s), count: outputs.length };
   }
@@ -121,7 +121,7 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
     activeId = job.id;
     try {
       job.status = 'generating'; job.message = 'Preparing your product photographs…'; await save(job);
-      const existing = await outputFiles(job), missing = scenes.filter(s => !existing.some(o => o.id === s.id));
+      const existing = await outputFiles(job), missing = sceneSet(job.mode).filter(s => !existing.some(o => o.id === s.id));
       const directory = path.join(dataDir, job.id);
       let prompt = missing.length ? buildPrompt(job, directory, missing) : `Create listing copy only. Do not generate or overwrite images. Inspect original references: ${JSON.stringify(job.inputs.map(i => path.join(directory, 'inputs', i.file)))}. Product facts: ${JSON.stringify(job.product)}. Do not delegate or use paid API fallbacks. Write only inside this job's outputs folder.`;
       if (job.outputVersion === 2 && !await readListing(job)) {
@@ -172,13 +172,13 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
     try {
       const host = req.headers.host || '';
       if (!/^(127\.0\.0\.1|localhost)(:\d+)?$/.test(host)) throw fail('Local access only.', 403);
-      if (req.headers.origin && req.headers.origin !== `http://${host}`) throw fail('Please use the Product Studio page to submit images.', 403);
+      if (req.headers.origin && req.headers.origin !== `http://${host}`) throw fail('Please use the Shelf Studio page to submit images.', 403);
       const url = new URL(req.url, `http://${host}`), route = url.pathname;
       if (req.method === 'POST') {
         if (req.headers['x-studio-token'] !== token) throw fail('Refresh the page and try again.', 403);
         if (!req.headers['content-type']?.startsWith('application/json')) throw fail('JSON upload required.', 415);
       }
-      if (req.method === 'GET' && route === '/api/status') return send(res, 200, { ...await checkLogin(), token, scenes: scenes.map(({ prompt, ...s }) => s) });
+      if (req.method === 'GET' && route === '/api/status') return send(res, 200, { ...await checkLogin(), token, scenes: scenes.map(({ prompt, ...s }) => s), angles: angles.map(({ prompt, ...s }) => s) });
       if (req.method === 'GET' && route === '/api/knowledge') return send(res, 200, { ...await knowledgeSummary(), exampleCount: await exampleCount(dataDir) });
       if (req.method === 'GET' && route === '/api/jobs') return send(res, 200, await Promise.all([...jobs.values()].reverse().map(publicJob)));
       if (req.method === 'POST' && route === '/api/jobs') {
@@ -187,6 +187,7 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
         const body = await jsonBody(req);
         if (!body || !Array.isArray(body.images) || body.images.length < 1 || body.images.length > 5) throw fail('Upload between 1 and 5 reference images.');
         if (body.notes != null && (typeof body.notes !== 'string' || body.notes.length > 2000)) throw fail('Keep your notes under 2,000 characters.');
+        if (body.mode != null && !modes.includes(body.mode)) throw fail('Choose scenes or camera angles.');
         const product = validateProduct(body.product);
         const decoded = body.images.map(decodeImage);
         if (decoded.reduce((sum, i) => sum + i.bytes.length, 0) > 24 * 1024 * 1024) throw fail('Please keep your total upload under 24 MB.');
@@ -199,7 +200,7 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
           const file = `reference-${index + 1}.${image.extension}`;
           await writeFile(path.join(directory, 'inputs', file), image.bytes, { mode: 0o600 }); inputs.push({ name: image.name, file });
         }
-        const job = { id, outputVersion: 2, inputs, notes: body.notes || '', product, createdAt: new Date().toISOString(), status: 'queued', message: 'Waiting for the next available generation slot.' };
+        const job = { id, outputVersion: 2, mode: body.mode || 'scenes', inputs, notes: body.notes || '', product, createdAt: new Date().toISOString(), status: 'queued', message: 'Waiting for the next available generation slot.' };
         await save(job); jobs.set(id, job); send(res, 201, await publicJob(job));
         void pump().catch(console.error); return;
       }
@@ -212,7 +213,7 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
           const files = await Promise.all(outputs.map(async o => ({ name: `${o.id}.png`, data: await readFile(o.file) })));
           if (listing) files.push({ name: 'listing.txt', data: Buffer.from(listingText(listing)) }, { name: 'listing.json', data: Buffer.from(JSON.stringify(listing, null, 2)) });
           const zip = makeZip(files);
-          res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Length': zip.length, 'Content-Disposition': `attachment; filename="product-studio-${job.id.slice(0, 8)}.zip"` }); return res.end(zip);
+          res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Length': zip.length, 'Content-Disposition': `attachment; filename="shelf-studio-${job.id.slice(0, 8)}.zip"` }); return res.end(zip);
         }
         if (req.method === 'GET' && action[2] === 'text') {
           const listing = await readListing(job); if (!listing) throw fail('Listing copy is not ready.', 409);
@@ -243,7 +244,7 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
         const match = /^\/files\/([a-f0-9-]{36})\/(inputs|outputs)\/([a-z0-9-]+\.(?:png|jpg|webp))$/.exec(route);
         if (!match) throw fail('File not found.', 404);
         const job = jobs.get(match[1]); if (!job) throw fail('File not found.', 404);
-        const allowed = match[2] === 'inputs' ? job.inputs.some(i => i.file === match[3]) : scenes.some(s => `${s.id}.png` === match[3]);
+        const allowed = match[2] === 'inputs' ? job.inputs.some(i => i.file === match[3]) : sceneSet(job.mode).some(s => `${s.id}.png` === match[3]);
         if (!allowed) throw fail('File not found.', 404);
         const file = path.join(dataDir, match[1], match[2], match[3]);
         if (await realpath(file) !== file) throw fail('File not found.', 404);
@@ -253,7 +254,7 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
         const files = { '/': 'index.html', '/app.js': 'app.js', '/styles.css': 'styles.css' };
         const example = /^\/examples\/([a-z-]+)\.png$/.exec(route);
         if (files[route]) return await serveFile(res, path.join(ROOT, 'public', files[route]));
-        if (example && scenes.some(s => s.id === example[1])) return await serveFile(res, path.join(ROOT, 'public', 'examples', `${example[1]}.png`));
+        if (example && [...scenes, ...angles].some(s => s.id === example[1])) return await serveFile(res, path.join(ROOT, 'public', 'examples', `${example[1]}.png`));
       }
       throw fail('Not found.', 404);
     } catch (error) {
@@ -298,7 +299,7 @@ export function runCodex({ directory, prompt, onProgress }) {
         const line = buffer.slice(0, newline); buffer = buffer.slice(newline + 1);
         try {
           const event = JSON.parse(line);
-          if (event.type === 'thread.started') onProgress('Studying your products and setting up the five scenes…');
+          if (event.type === 'thread.started') onProgress('Studying your products and setting up the five shots…');
           if (event.type === 'item.started' && /tool|image/.test(event.item?.type || '')) onProgress('Creating your product photographs. Images will appear as they finish…');
           if (event.type === 'error' || event.type === 'turn.failed') lastError = event.message || event.error?.message || 'Codex could not complete the batch.';
         } catch { /* Ignore non-JSON CLI diagnostics. */ }
@@ -319,7 +320,7 @@ export function runCodex({ directory, prompt, onProgress }) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const app = await createStudio();
   const port = Number(process.env.PORT || 4317);
-  app.server.listen(port, '127.0.0.1', () => console.log(`Product Studio is running at http://localhost:${port}`));
+  app.server.listen(port, '127.0.0.1', () => console.log(`Shelf Studio is running at http://localhost:${port}`));
   app.server.on('error', error => { console.error(error.code === 'EADDRINUSE' ? `Port ${port} is in use. Choose another with PORT=4318 npm start.` : error.message); process.exitCode = 1; });
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => app.close().then(() => process.exit(0)));
 }

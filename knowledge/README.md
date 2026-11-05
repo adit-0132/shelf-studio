@@ -1,6 +1,6 @@
 # Writing knowledge base
 
-Product Studio's listing copy is guided by the files in this folder. Every new job receives a frozen copy of the guide (`knowledge-snapshot.json` in the job folder), versioned by a hash of the guide text, so editing these files only affects new jobs.
+Shelf Studio's listing copy is guided by the files in this folder. Every new job receives a frozen copy of the guide (`knowledge-snapshot.json` in the job folder), versioned by a hash of the guide text, so editing these files only affects new jobs.
 
 - [style-guide.md](style-guide.md): voice, evidence hierarchy, title, bullet and description structure, and claim boundaries.
 - [category-playbooks.md](category-playbooks.md): structure for common listing shapes (sets, gifts, unfamiliar products).

@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f5f1"><title>Product Studio</title>
+  <meta name="theme-color" content="#f6f5f1"><title>Shelf Studio</title>
   <link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="/" aria-label="Product Studio home"><span class="brandmark">✳</span> Product Studio</a><div id="connection" class="connection" role="status"><span class="dot"></span><span id="connection-text">Connecting…</span></div></header>
+  <header class="topbar"><a class="brand" href="/" aria-label="Shelf Studio home"><span class="brandmark">✳</span> Shelf Studio</a><div id="connection" class="connection" role="status"><span class="dot"></span><span id="connection-text">Connecting…</span></div></header>
   <main>
     <section class="intro"><div class="eyebrow">YOUR PRODUCT LISTING STUDIO</div><h1>Your products.<br><span>Ready to be discovered.</span></h1><p>Your photos and product details become five styled images, a considered title, and rich listing copy.</p></section>
     <div class="workspace">
@@ -36,6 +36,7 @@
         <label class="notes-label" for="notes">Additional comments <span>Optional</span></label>
         <textarea id="notes" rows="3" maxlength="2000" placeholder="e.g. Emphasise festive gifting. Include hand-wash-only care. Keep the language understated."></textarea>
         <p class="field-help">Use comments for description style, specific wording, care instructions, or extra specifications. Add explicit photo requests here too.</p><div id="error" class="error" role="alert" hidden></div>
+        <fieldset class="mode-choice"><legend class="field-label">Photo set</legend><label><input type="radio" name="mode" value="scenes" checked> Five scenes</label><label><input type="radio" name="mode" value="angles"> Five camera angles</label></fieldset>
         <button class="primary" id="generate" disabled><span aria-hidden="true">✧</span> Generate complete listing <span class="arrow" aria-hidden="true">↗</span></button>
         <p class="fine-print">Made with your connected Codex account.<br>Usually takes a few minutes. Usage limits apply.</p>
       </section>
@@ -52,7 +53,7 @@
       </section>
     </div>
     <section id="history-section" class="history-section" hidden><div class="section-heading"><h2>Your saved listings</h2><button id="show-examples" class="text-button">View examples</button></div><div id="history" class="history"></div></section>
-    <button id="knowledge-button" class="text-button">View writing knowledge base & sources</button><section id="knowledge-panel" class="listing-copy" hidden></section><footer>Less staging. More creating.<span>PRODUCT STUDIO</span></footer>
+    <button id="knowledge-button" class="text-button">View writing knowledge base & sources</button><section id="knowledge-panel" class="listing-copy" hidden></section><footer>Less staging. More creating.<span>SHELF STUDIO</span></footer>
   </main>
   <dialog id="lightbox"><button class="close-dialog" id="close-dialog" aria-label="Close image preview">×</button><img id="lightbox-image" alt=""><div class="lightbox-bottom"><strong id="lightbox-title"></strong><a id="lightbox-download" class="secondary" download>↓ Download image</a></div></dialog>
 </body>

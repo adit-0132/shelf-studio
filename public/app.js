@@ -1,6 +1,7 @@
 const $ = id => document.getElementById(id);
-const state = { files: [], scenes: [], jobs: [], selected: null, ready: false, token: null, submitting: false, galleryKey: '', historyKey: '', detailsKey: '' };
+const state = { files: [], scenes: [], angles: [], mode: 'scenes', jobs: [], selected: null, ready: false, token: null, submitting: false, galleryKey: '', historyKey: '', detailsKey: '' };
 const isActive = job => ['queued', 'generating'].includes(job?.status);
+const setFor = mode => mode === 'angles' ? state.angles : state.scenes;
 const names = { queued: 'Queued', generating: 'Creating your listing', complete: 'Your outputs are ready', partial: 'Some outputs are ready', failed: 'Generation stopped', cancelled: 'Generation stopped', interrupted: 'Ready to resume' };
 function showError(message = '') { $('error').textContent = message; $('error').hidden = !message; }
 function updateButton() { $('generate').disabled = !state.ready || !state.files.length || state.submitting; }
@@ -79,6 +80,7 @@ function productDetails() {
   return { brand: $('product-brand').value.trim(), name: $('product-name').value.trim(), material: $('material').value.trim(), pieceCount: number.value === '' ? null : Number(number.value), dimensionUnit: $('dimension-unit').value, weightUnit: $('weight-unit').value, dimensions };
 }
 $('add-piece').onclick = () => addDimensionRow(true);
+for (const input of document.querySelectorAll('input[name="mode"]')) input.onchange = () => { state.mode = input.value; render(); };
 addDimensionRow();
 $('generate').onclick = async () => {
   if (state.submitting) return;
@@ -87,7 +89,7 @@ $('generate').onclick = async () => {
   const submitted = [...state.files];
   try {
     const images = await Promise.all(submitted.map(async item => ({ name: item.file.name, data: await readData(item.file) })));
-    const job = await api('/api/jobs', { method: 'POST', body: JSON.stringify({ images, notes: $('notes').value, product }) });
+    const job = await api('/api/jobs', { method: 'POST', body: JSON.stringify({ images, notes: $('notes').value, product, mode: state.mode }) });
     state.jobs.unshift(job); selectJob(job.id);
     submitted.forEach(item => URL.revokeObjectURL(item.url));
     state.files = state.files.filter(f => !submitted.some(s => s.id === f.id)); renderPreviews(); $('notes').value = '';
@@ -97,7 +99,7 @@ $('generate').onclick = async () => {
 };
 function selectJob(id) {
   state.selected = id;
-  if (id) localStorage.setItem('product-studio-batch', id); else localStorage.removeItem('product-studio-batch');
+  if (id) localStorage.setItem('shelf-studio-batch', id); else localStorage.removeItem('shelf-studio-batch');
   render();
 }
 function showLightbox(scene, url, example) {
@@ -111,7 +113,7 @@ $('lightbox').onclick = e => { if (e.target === $('lightbox')) { const r = $('li
 function render() {
   const job = state.jobs.find(j => j.id === state.selected), active = isActive(job);
   $('gallery-tag').textContent = job ? `${job.count} / 5 ready` : 'Example results';
-  $('gallery-description').textContent = job ? 'Listing copy and photographs appear as they finish.' : 'The same five scenes you loved, ready for your next product.';
+  $('gallery-description').textContent = job ? 'Listing copy and photographs appear as they finish.' : state.mode === 'angles' ? 'Five camera angles of the same product, ready for your next listing.' : 'The same five scenes you loved, ready for your next product.';
   $('batch-progress').hidden = !job;
   $('result-actions').hidden = !job;
   if (job) {
@@ -140,7 +142,7 @@ function render() {
       if (!$('saved-details-content').children.length) add('No extra product details supplied.');
     }
   }
-  const galleryKey = JSON.stringify([job?.id, job?.status, job?.outputs.map(o => o.id), state.scenes]);
+  const galleryKey = JSON.stringify([job?.id, job?.status, job?.outputs.map(o => o.id), job ? job.mode : state.mode, state.scenes, state.angles]);
   if (galleryKey !== state.galleryKey) {
     state.galleryKey = galleryKey; $('gallery').replaceChildren();
     const pending = text => {
@@ -149,7 +151,7 @@ function render() {
       const label = document.createElement('span'); label.textContent = text;
       placeholder.append(symbol, label); return placeholder;
     };
-    state.scenes.forEach((scene, index) => {
+    setFor(job ? job.mode : state.mode).forEach((scene, index) => {
       const card = document.createElement('article'); card.className = 'scene';
       const url = job ? job.outputs.find(o => o.id === scene.id)?.url : `/examples/${scene.id}.png`;
       if (url) {
@@ -190,9 +192,9 @@ $('retry').onclick = () => action('retry'); $('cancel').onclick = () => action('
 async function refresh(initial = false) {
   try {
     const [status, jobs] = await Promise.all([api('/api/status'), api('/api/jobs')]);
-    state.ready = status.ready; state.token = status.token; state.scenes = status.scenes; state.jobs = jobs;
+    state.ready = status.ready; state.token = status.token; state.scenes = status.scenes; state.angles = status.angles || []; state.jobs = jobs;
     $('connection').className = 'connection ' + (status.ready ? 'ready' : 'offline'); $('connection-text').textContent = status.message;
-    if (initial) { const saved = localStorage.getItem('product-studio-batch'); state.selected = jobs.some(j => j.id === saved) ? saved : null; }
+    if (initial) { const saved = localStorage.getItem('shelf-studio-batch'); state.selected = jobs.some(j => j.id === saved) ? saved : null; }
     render(); updateButton();
   } catch {
     state.ready = false; $('connection').className = 'connection offline'; $('connection-text').textContent = 'Reconnecting to the studio…'; updateButton();

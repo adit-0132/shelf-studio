@@ -2,3 +2,4 @@ data/
 *.log
 test-artifacts/
 output/
+launch/

@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import http from 'node:http';
 import path from 'node:path';
 import { createStudio, decodeImage, validateProduct } from '../src/server.mjs';
-import { scenes } from '../src/scenes.mjs';
+import { scenes, angles, buildPrompt } from '../src/scenes.mjs';
 import { makeZip } from '../src/zip.mjs';
 import { canonicalSpecifications, listingInstructions } from '../src/listing.mjs';
 
@@ -16,7 +16,7 @@ const image = { name: '../../unsafe.png', data: `data:image/png;base64,${png.toS
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function until(fn) { for (let i = 0; i < 120; i++) { const value = await fn(); if (value) return value; await wait(20); } throw new Error('Timed out'); }
 async function fixture(t, options = {}) {
-  const dataDir = await mkdtemp(path.join(tmpdir(), 'product-studio-test-'));
+  const dataDir = await mkdtemp(path.join(tmpdir(), 'shelf-studio-test-'));
   const app = await createStudio({ dataDir, checkLogin: async () => ({ ready: true, message: 'Test login' }), ...options });
   await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
   const base = `http://127.0.0.1:${app.server.address().port}`;
@@ -189,4 +189,21 @@ test('brand is optional and never invented', () => {
   assert.ok(!canonicalSpecifications(product).some(s => s.name === 'Brand'));
   assert.deepEqual(canonicalSpecifications(validateProduct({ brand: ' Acme ' }))[0], { name: 'Brand', value: 'Acme' });
   assert.match(listingInstructions({ product }, '/tmp/job', { version: 'v', guide: '', examples: [] }), /do not name, guess or invent a brand/);
+});
+
+test('angles mode makes five camera views; scenes prompts stay unchanged', async t => {
+  let prompt;
+  const f = await fixture(t, { runner: ({ directory, prompt: p }) => { prompt = p; return { cancel() {}, done: (async () => {
+    await writeListing(directory); for (const s of angles) await writeFile(path.join(directory, 'outputs', s.id + '.png'), png);
+  })() }; } });
+  assert.equal((await f.request('/api/jobs', { images: [image], mode: 'video' })).status, 400);
+  const status = await (await f.request('/api/status')).json();
+  assert.equal(status.angles.length, 5); assert.ok(!('prompt' in status.angles[0]));
+  const job = await (await f.request('/api/jobs', { images: [image], mode: 'angles' })).json();
+  assert.equal(job.mode, 'angles');
+  const done = await until(async () => { const j = await (await f.request(`/api/jobs/${job.id}`)).json(); return j.status === 'complete' && j; });
+  assert.deepEqual(done.outputs.map(o => o.id), angles.map(s => s.id));
+  assert.equal((await f.request(done.outputs[0].url)).status, 200);
+  assert.match(prompt, /NOT the camera pose/); assert.match(prompt, /angle-overhead\.png/); assert.doesNotMatch(prompt, /white-studio\.png/);
+  assert.doesNotMatch(buildPrompt({ inputs: [], notes: '' }, '/tmp/job', scenes), /CAMERA ANGLES/);
 });

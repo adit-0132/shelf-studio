@@ -1,4 +1,4 @@
-# Product Studio
+# Shelf Studio
 
 A local web app that turns rough phone photos of a product into five catalog-style photographs and a full set of
 marketplace listing copy, using the built-in image generation in your [Codex CLI](https://github.com/openai/codex)
@@ -6,19 +6,35 @@ login. No API key, no cloud service of its own: everything runs on your machine,
 
 It is built around **product fidelity**. Every generation call gets all of your original reference photos and strict
 instructions to keep the product's exact shape, proportions, quantity, material, colours and decorative detail (fine
-engraving, inlay, printed patterns), while replacing the background, lighting and setting.
+engraving, inlay, printed patterns), while changing the background, lighting, setting or camera angle.
 
 ## What you get per product
 
-- **5 photographs** (landscape 3:2 PNG), one per scene:
+- **5 photographs** (landscape 3:2 PNG). Choose a photo set per batch:
+
+  **Five scenes:** the same view in five settings and lighting moods.
 
   | Scene | Look |
   |---|---|
-  | White studio | Seamless white, soft contact shadows, no props (the marketplace main-image candidate) |
+  | White studio | Seamless white, soft contact shadows, no props. A clean white-background shot. Amazon requires the main image to be a real photo of the product, so check your marketplace's rules before using any generated image as the main one |
   | Stone plinth | Travertine plinth, warm-grey backdrop, soft directional window light |
   | Natural linen | Light linen with soft folds, bright diffused daylight |
   | Festive setting | Warm walnut with softly blurred marigolds and brass diyas, warm glow |
   | Dark studio | Charcoal backdrop, low-key light with rim highlights on edges and texture |
+
+  **Five camera angles:** the same product from five camera positions on plain settings, so the viewpoint is what
+  varies.
+
+  | View | Camera and setting |
+  |---|---|
+  | Eye-level ¾ | Product height, turned about 30°; white studio |
+  | High angle | About 45° above, looking down; soft-daylight tabletop |
+  | Low angle | Near the base looking up about 10°; white seamless |
+  | Overhead | Steeply above, about 65°; pale stone |
+  | Turned view | Orbited about 60° around the product; natural linen |
+
+  New viewpoints can show parts that no reference photo shows, such as interiors, backs or bases. The prompt keeps
+  those plain and tells the model never to invent new ornament, so supply photos from several sides when you can.
 
 - **Listing copy**, checked against marketplace limits:
   - a catalogue title (up to 220 characters),
@@ -45,8 +61,8 @@ image generation. Generation counts against that plan's usage limits.
 npm install -g @openai/codex    # tested with codex-cli 0.156.1
 codex login                     # sign in with your ChatGPT account
 
-git clone https://github.com/adit-0132/product-studio.git
-cd product-studio
+git clone https://github.com/adit-0132/shelf-studio.git
+cd shelf-studio
 npm start                       # then open http://localhost:4317
 ```
 
@@ -107,12 +123,12 @@ generation, then sign in again with `codex logout && codex login`.
 ./linux/install.sh                          # or: CODEX_MODEL=<model> ./linux/install.sh
 ```
 
-This installs a systemd user service and a **Product Studio** app-menu launcher for this clone. Re-run it after moving
+This installs a systemd user service and a **Shelf Studio** app-menu launcher for this clone. Re-run it after moving
 the folder. To remove it:
 
 ```sh
-systemctl --user disable --now product-studio
-rm ~/.config/systemd/user/product-studio.service ~/.local/share/applications/product-studio.desktop
+systemctl --user disable --now shelf-studio
+rm ~/.config/systemd/user/shelf-studio.service ~/.local/share/applications/shelf-studio.desktop
 ```
 
 ## Project layout
@@ -120,7 +136,7 @@ rm ~/.config/systemd/user/product-studio.service ~/.local/share/applications/pro
 ```
 src/
   server.mjs      HTTP server, persistent job queue, Codex runner
-  scenes.mjs      the five scenes and the product-preservation prompt
+  scenes.mjs      the scene and camera-angle presets, and the product-preservation prompt
   listing.mjs     listing schema, limits, validation and copy prompt
   knowledge.mjs   loads the writing guide; frozen snapshot per batch
   zip.mjs         dependency-free ZIP writer
@@ -155,7 +171,7 @@ They use temporary folders and a stub runner, so they never call Codex or genera
 
 ## Security notes
 
-Product Studio is a personal local tool, not a hosted service. It listens on `127.0.0.1` only, and it rejects foreign
+Shelf Studio is a personal local tool, not a hosted service. It listens on `127.0.0.1` only, and it rejects foreign
 `Host` and `Origin` headers. POSTs require a per-session token, and pages are served with a strict Content Security
 Policy. It never reads or exposes your Codex credentials.
 
@@ -163,4 +179,4 @@ Policy. It never reads or exposes your Codex credentials.
 
 [GPL-3.0-or-later](LICENSE).
 
-Product Studio is an independent project. It is not affiliated with or endorsed by OpenAI, Amazon or Flipkart.
+Shelf Studio is an independent project. It is not affiliated with or endorsed by OpenAI, Amazon or Flipkart.

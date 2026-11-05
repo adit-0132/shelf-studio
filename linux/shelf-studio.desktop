@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=Product Studio
+Name=Shelf Studio
 Comment=Create five styled product photographs
 Exec=@APP_DIR@/linux/open-studio.sh
 Icon=camera-photo

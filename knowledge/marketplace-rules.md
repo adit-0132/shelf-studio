@@ -1,6 +1,6 @@
 # Marketplace field and evidence notes
 
-Verified/reviewed 6 September 2026. Product Studio creates drafts for review and export; it does not publish listings or certify marketplace acceptance. Current seller-account category fields take precedence over this snapshot.
+Verified/reviewed 6 September 2026. Shelf Studio creates drafts for review and export; it does not publish listings or certify marketplace acceptance. Current seller-account category fields take precedence over this snapshot.
 
 ## Amazon India: title and highlights
 
@@ -24,7 +24,7 @@ Source: [Amazon 2025 title announcement](https://sellercentral.amazon.com/seller
 
 ## Images
 
-Amazon's photography guide recommends a white-background product shot, accurate appearance, clear focus and dominant product framing. Product Studio preserves a clean white setting plus four lifestyle images. The white setting is the natural candidate for a main-image review. Decorative props belong to lifestyle scenes and must not imply included accessories. AI-generated detail fidelity and the live category requirements still need the seller's review; a generated white image is not automatically a certified-compliant main image.
+Amazon's photography guide recommends a white-background product shot, accurate appearance, clear focus and dominant product framing. Shelf Studio preserves a clean white setting plus four lifestyle images. The white setting is the natural candidate for a main-image review. Decorative props belong to lifestyle scenes and must not imply included accessories. AI-generated detail fidelity and the live category requirements still need the seller's review; a generated white image is not automatically a certified-compliant main image.
 
 Source: [Amazon product photography guide](https://sell.amazon.com/blog/product-photos), official guidance, page read.
 

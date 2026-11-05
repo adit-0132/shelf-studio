@@ -10,3 +10,4 @@
 .product-fields > input { width: 100%; box-sizing: border-box; }
 #listing { margin-bottom: 20px; }
 .results-panel { position: static; }
+.mode-choice{border:0;padding:0;margin:18px 0 0;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}.mode-choice legend{width:100%;margin-bottom:8px}.mode-choice label{display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer}.mode-choice input{accent-color:#60794e}

@@ -1,6 +1,6 @@
 # Setup guide
 
-Step-by-step setup for Product Studio, written so that a person can follow it by hand and a coding agent can follow
+Step-by-step setup for Shelf Studio, written so that a person can follow it by hand and a coding agent can follow
 it on someone's behalf. Each step has a check with the expected result, so you always know whether it worked.
 
 Tested on Fedora Linux 43 with Node.js 22 and Codex CLI 0.156.1. macOS should work the same way (untested). Windows is
@@ -50,7 +50,7 @@ node --version
 ```
 
 Expected: `v22.x` or newer. If it's missing or older, install the current LTS from <https://nodejs.org> or with nvm
-(`nvm install 22`). Product Studio has **no npm dependencies**, so there is nothing to `npm install`.
+(`nvm install 22`). Shelf Studio has **no npm dependencies**, so there is nothing to `npm install`.
 
 ## 2. Codex CLI
 
@@ -101,15 +101,15 @@ Expected output includes `image_gen__imagegen`.
 ## 5. Get and start the app
 
 ```sh
-git clone https://github.com/adit-0132/product-studio.git
-cd product-studio
+git clone https://github.com/adit-0132/shelf-studio.git
+cd shelf-studio
 npm test
 npm start
 ```
 
 Expected:
 - `npm test` ends with `# pass 12` and `# fail 0`. The tests never call Codex.
-- `npm start` prints `Product Studio is running at http://localhost:4317`.
+- `npm start` prints `Shelf Studio is running at http://localhost:4317`.
 
 Check the connection from a second terminal:
 
@@ -125,7 +125,8 @@ say **Connected to Codex**, and the gallery shows five example results.
 1. Drop 1–5 photos of one product (PNG, JPEG or WebP; 10 MB each, 24 MB total). Several angles of the same product
    help.
 2. Optionally fill in brand, product name, material, piece count, dimensions and comments.
-3. Click **Generate complete listing**.
+3. Under **Photo set**, choose **Five scenes** (settings and lighting) or **Five camera angles** (viewpoints).
+4. Click **Generate complete listing**.
 
 Expected: the listing copy appears first, then the five images one by one. On the reference machine a batch took
 about 4 minutes. Everything is saved in `data/<batch-id>/`:
@@ -155,10 +156,10 @@ Set these as environment variables when starting the app, e.g. `PORT=4318 CODEX_
 ./linux/install.sh                          # or: CODEX_MODEL=<model> ./linux/install.sh
 ```
 
-This installs a systemd user service and a **Product Studio** launcher in your app menu. It records the current
+This installs a systemd user service and a **Shelf Studio** launcher in your app menu. It records the current
 paths of `node` and `codex`, so re-run it after moving the folder or reinstalling either one.
 
-Check it with `systemctl --user status product-studio`. Restart it with `systemctl --user restart product-studio`
+Check it with `systemctl --user status shelf-studio`. Restart it with `systemctl --user restart shelf-studio`
 after a `git pull`.
 
 On macOS there is no autostart script; run `npm start` when you need it.
@@ -183,7 +184,7 @@ On macOS there is no autostart script; run `npm start` when you need it.
 - **Update:** run `git pull` and restart the app. Your batches in `data/` are kept.
 - **Uninstall the Linux service:**
   ```sh
-  systemctl --user disable --now product-studio
-  rm ~/.config/systemd/user/product-studio.service ~/.local/share/applications/product-studio.desktop
+  systemctl --user disable --now shelf-studio
+  rm ~/.config/systemd/user/shelf-studio.service ~/.local/share/applications/shelf-studio.desktop
   ```
   Then delete the folder. Your batches are in its `data/` folder; keep them if you need them.
