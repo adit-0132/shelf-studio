@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f5f1"><title>Product Studio</title>
+  <link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/" aria-label="Product Studio home"><span class="brandmark">✳</span> Product Studio</a><div id="connection" class="connection" role="status"><span class="dot"></span><span id="connection-text">Connecting…</span></div></header>
+  <main>
+    <section class="intro"><div class="eyebrow">YOUR PRODUCT LISTING STUDIO</div><h1>Your products.<br><span>Ready to be discovered.</span></h1><p>Your photos and product details become five styled images, a considered title, and rich listing copy.</p></section>
+    <div class="workspace">
+      <section class="panel upload-panel" aria-labelledby="upload-heading">
+        <div class="section-heading"><span class="step">01</span><h2 id="upload-heading">Your product details</h2></div>
+        <div class="field-title raw-title">Raw product images</div>
+        <label class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose product images">
+          <input id="files" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+          <span class="upload-symbol" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/></svg></span>
+          <strong>Drop your images here</strong><span>or <u>browse files</u></span><small>PNG, JPG or WebP · Up to 5 photos<br>10 MB each · 24 MB total</small>
+        </label>
+        <div id="previews" class="previews"></div>
+        <p class="upload-tip">Have more than one product? Add them together.<br>They’ll appear in each of the five settings.</p>
+        <div class="product-fields">
+          <label class="field-label" for="product-brand">Brand</label><input id="product-brand" maxlength="100" placeholder="Optional · leave blank if unbranded">
+          <label class="field-label" for="product-name">Product name / type</label><input id="product-name" maxlength="200" placeholder="e.g. Floral stainless steel storage set">
+          <label class="field-label" for="material">Material</label>
+          <input id="material" type="text" maxlength="300" placeholder="e.g. Stainless steel, brass, wood">
+          <label class="field-label" for="piece-count">Number of pieces in the set</label>
+          <input id="piece-count" type="number" min="1" max="1000" step="1" placeholder="e.g. 3 or 10">
+          <div class="dimensions-heading"><span class="field-title">Piece dimensions & weight</span><span class="optional">Optional</span></div>
+          <div class="unit-selectors"><label for="dimension-unit">Dimensions <select id="dimension-unit"><option value="cm">cm</option><option value="mm">mm</option><option value="in">inches</option></select></label><label for="weight-unit">Weight <select id="weight-unit"><option value="g">g</option><option value="kg">kg</option><option value="oz">oz</option><option value="lb">lb</option></select></label></div>
+          <div id="dimension-rows"></div>
+          <button class="add-piece" id="add-piece" type="button">+ Add piece dimensions</button>
+          <p class="field-help">Add a row for each piece you want to describe. Leave unknown measurements blank.</p>
+        </div>
+        <label class="notes-label" for="notes">Additional comments <span>Optional</span></label>
+        <textarea id="notes" rows="3" maxlength="2000" placeholder="e.g. Emphasise festive gifting. Include hand-wash-only care. Keep the language understated."></textarea>
+        <p class="field-help">Use comments for description style, specific wording, care instructions, or extra specifications. Add explicit photo requests here too.</p><div id="error" class="error" role="alert" hidden></div>
+        <button class="primary" id="generate" disabled><span aria-hidden="true">✧</span> Generate complete listing <span class="arrow" aria-hidden="true">↗</span></button>
+        <p class="fine-print">Made with your connected Codex account.<br>Usually takes a few minutes. Usage limits apply.</p>
+      </section>
+      <section class="results-panel" aria-labelledby="results-heading">
+        <div class="section-heading result-heading"><div class="heading-group"><span class="step">02</span><h2 id="results-heading">Your listing</h2></div><span id="gallery-tag" class="pill">Example results</span></div>
+        <p class="section-copy" id="gallery-description">The same five scenes you loved, ready for your next product.</p>
+        <div id="batch-progress" class="batch-progress" hidden><div class="progress-top"><strong id="progress-title"></strong><span id="progress-count"></span></div><progress id="progress" max="5" value="0"></progress><p id="progress-message" role="status" aria-live="polite"></p></div>
+        <details id="saved-details" class="saved-details" hidden><summary>Product details for this batch</summary><div id="saved-details-content"></div></details>
+        <section id="listing-copy" class="listing-copy" hidden></section>
+        <button id="listing" class="secondary" hidden>Generate listing copy for these images</button>
+        <div id="gallery" class="gallery"></div>
+        <div class="result-actions" id="result-actions" hidden><a class="secondary" id="download-all">↓ Download listing & images (.zip)</a><button class="text-button" id="retry" hidden>Retry missing outputs</button><button class="text-button" id="cancel" hidden>Stop generation</button></div>
+        <div class="gallery-footer"><span class="tiny-spark">✧</span><span>Thoughtful lighting. Realistic textures. Your products in focus.</span></div>
+      </section>
+    </div>
+    <section id="history-section" class="history-section" hidden><div class="section-heading"><h2>Your saved listings</h2><button id="show-examples" class="text-button">View examples</button></div><div id="history" class="history"></div></section>
+    <button id="knowledge-button" class="text-button">View writing knowledge base & sources</button><section id="knowledge-panel" class="listing-copy" hidden></section><footer>Less staging. More creating.<span>PRODUCT STUDIO</span></footer>
+  </main>
+  <dialog id="lightbox"><button class="close-dialog" id="close-dialog" aria-label="Close image preview">×</button><img id="lightbox-image" alt=""><div class="lightbox-bottom"><strong id="lightbox-title"></strong><a id="lightbox-download" class="secondary" download>↓ Download image</a></div></dialog>
+</body>
+</html>

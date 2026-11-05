@@ -1,0 +1,107 @@
+[
+  {
+    "id": "policy-amazon-in-2026-title",
+    "marketplace": "Amazon India",
+    "brand": "Amazon",
+    "productType": "Title and Item Highlights policy",
+    "url": "https://sellercentral.amazon.in/seller-forums/discussions/t/cd6a14da-a5c7-4f62-b886-7ead97407b3c",
+    "accessedAt": "2026-09-06",
+    "accessQuality": "page_full",
+    "observations": [
+      "Official News_Amazon announcement sets 75-character non-media titles and 125-character Item Highlights from 27 July 2026."
+    ],
+    "cautions": [
+      "Do not substitute the older 200-character overview value."
+    ]
+  },
+  {
+    "id": "policy-amazon-in-overview",
+    "marketplace": "Amazon India",
+    "brand": "Amazon",
+    "productType": "Listing overview",
+    "url": "https://sell.amazon.in/sell-online/list-your-products",
+    "accessedAt": "2026-09-06",
+    "accessQuality": "page_full",
+    "observations": [
+      "Overview covers identity, images, bullets and description."
+    ],
+    "cautions": [
+      "Title length advice conflicts with the dated 2026 announcement."
+    ]
+  },
+  {
+    "id": "policy-amazon-components",
+    "marketplace": "Amazon",
+    "brand": "Amazon",
+    "productType": "Listing components",
+    "url": "https://sell.amazon.com/blog/amazon-product-listings",
+    "accessedAt": "2026-09-06",
+    "accessQuality": "page_full",
+    "observations": [
+      "Official guide separates description, five feature bullets and images."
+    ],
+    "cautions": [
+      "General guidance is not an exhaustive category schema."
+    ]
+  },
+  {
+    "id": "policy-amazon-in-copy",
+    "marketplace": "Amazon India",
+    "brand": "Amazon",
+    "productType": "Staff listing guidance",
+    "url": "https://sellercentral.amazon.in/seller-forums/discussions/t/5b82dff2-813d-4d17-a298-6a5332edfa9a",
+    "accessedAt": "2026-09-06",
+    "accessQuality": "page_full",
+    "observations": [
+      "Amazon staff reply gives five bullets up to 500 characters each and description up to 2000 characters."
+    ],
+    "cautions": [
+      "Staff guidance rather than a complete current product-type schema; its title length is older."
+    ]
+  },
+  {
+    "id": "policy-amazon-2025-title",
+    "marketplace": "Amazon",
+    "brand": "Amazon",
+    "productType": "Historical title wording policy",
+    "url": "https://sellercentral.amazon.com/seller-forums/discussions/t/533f9cf7-3b5e-4974-b523-02e4a1a42c5f",
+    "accessedAt": "2026-09-06",
+    "accessQuality": "page_full",
+    "observations": [
+      "2025 announcement limits repeated words and certain special characters."
+    ],
+    "cautions": [
+      "Its older 200-character default is not used by the current Amazon title field."
+    ]
+  },
+  {
+    "id": "policy-amazon-photo",
+    "marketplace": "Amazon",
+    "brand": "Amazon",
+    "productType": "Product photography guidance",
+    "url": "https://sell.amazon.com/blog/product-photos",
+    "accessedAt": "2026-09-06",
+    "accessQuality": "page_full",
+    "observations": [
+      "White product backgrounds, accurate product appearance, sharpness and substantial product framing are recommended."
+    ],
+    "cautions": [
+      "A generated image requires human review against actual product and current category requirements."
+    ]
+  },
+  {
+    "id": "policy-flipkart-overview",
+    "marketplace": "Flipkart",
+    "brand": "Flipkart",
+    "productType": "Listing overview",
+    "url": "https://seller.flipkart.com/sell-online",
+    "accessedAt": "2026-09-06",
+    "accessQuality": "snippet_only",
+    "observations": [
+      "Indexed official text describes title, description, images, dimensions, features and usage instructions."
+    ],
+    "cautions": [
+      "Direct open returned a minimal shell; universal field lengths were not verified."
+    ]
+  }
+]
