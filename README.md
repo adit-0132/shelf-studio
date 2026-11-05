@@ -36,6 +36,10 @@ engraving, inlay, printed patterns), while changing the background, lighting, se
   New viewpoints can show parts that no reference photo shows, such as interiors, backs or bases. The prompt keeps
   those plain and tells the model never to invent new ornament, so supply photos from several sides when you can.
 
+  The camera-angle examples in the app were generated from one phone photo of a mug by Douglas Paul Perkins
+  ([CC0, Wikimedia Commons](https://commons.wikimedia.org/wiki/File:KY_Mug.jpg)). Small printed text can still
+  drift: the opening 「 is missing in two of those five views.
+
 - **Listing copy**, checked against marketplace limits:
   - a catalogue title (up to 220 characters),
   - an Amazon title (up to 75) and Item Highlights (up to 125),
