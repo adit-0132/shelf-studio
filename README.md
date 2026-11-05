@@ -36,23 +36,25 @@ or origin from a photo, and it never invents a brand.
 > AI image generation redraws the product. The prompts are built to preserve detail, but very fine patterns or
 > lettering can still drift. Review every image and claim before you publish a listing.
 
-## Requirements
+## Get started
 
-- **Node.js 22+**. There are no npm dependencies.
-- **Codex CLI**, signed in with a ChatGPT account that includes image generation:
-  ```sh
-  npm install -g @openai/codex    # tested with codex-cli 0.156.1
-  codex login
-  ```
-  Generation counts against your plan's usage limits.
-
-## Quick start
+You need **Node.js 22+** (no npm dependencies) and the **Codex CLI**, signed in with a ChatGPT plan that includes
+image generation. Generation counts against that plan's usage limits.
 
 ```sh
+npm install -g @openai/codex    # tested with codex-cli 0.156.1
+codex login                     # sign in with your ChatGPT account
+
 git clone https://github.com/adit-0132/product-studio.git
 cd product-studio
-npm start
+npm start                       # then open http://localhost:4317
 ```
+
+The header should say **Connected to Codex**. For step-by-step setup with a check at each step, a way to confirm that
+Codex's image tool is available, and troubleshooting, see **[SETUP.md](SETUP.md)**. It's written for people and for
+coding agents setting the app up on someone's behalf.
+
+## Using it
 
 Open <http://localhost:4317>. The gallery starts with example results, then:
 
