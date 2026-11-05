@@ -207,3 +207,11 @@ test('angles mode makes five camera views; scenes prompts stay unchanged', async
   assert.match(prompt, /NOT the camera pose/); assert.match(prompt, /angle-overhead\.png/); assert.doesNotMatch(prompt, /white-studio\.png/);
   assert.doesNotMatch(buildPrompt({ inputs: [], notes: '' }, '/tmp/job', scenes), /CAMERA ANGLES/);
 });
+
+test('serves the favicon and the header mark', async t => {
+  const f = await fixture(t);
+  const icon = await f.request('/favicon.ico');
+  assert.equal(icon.status, 200); assert.equal(icon.headers.get('content-type'), 'image/x-icon');
+  const page = await (await f.request('/')).text();
+  assert.match(page, /rel="icon" href="\/favicon.ico"/); assert.match(page, /class="brandmark"><svg/); assert.doesNotMatch(page, /✳<\/span> Shelf/);
+});

@@ -16,7 +16,7 @@ const exec = promisify(execFile);
 const PNG = Buffer.from('89504e470d0a1a0a', 'hex');
 const END = Buffer.from('0000000049454e44ae426082', 'hex');
 const ACTIVE = new Set(['queued', 'generating']);
-const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp' };
+const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon' };
 const fail = (message, status = 400) => Object.assign(new Error(message), { status });
 
 export function validateProduct(value) {
@@ -251,7 +251,7 @@ export async function createStudio({ dataDir = process.env.STUDIO_DATA_DIR || pa
         return await serveFile(res, file, url.searchParams.has('download'));
       }
       if (req.method === 'GET') {
-        const files = { '/': 'index.html', '/app.js': 'app.js', '/styles.css': 'styles.css' };
+        const files = { '/': 'index.html', '/app.js': 'app.js', '/styles.css': 'styles.css', '/favicon.ico': 'favicon.ico' };
         const example = /^\/examples\/([a-z-]+)\.png$/.exec(route);
         if (files[route]) return await serveFile(res, path.join(ROOT, 'public', files[route]));
         if (example && [...scenes, ...angles].some(s => s.id === example[1])) return await serveFile(res, path.join(ROOT, 'public', 'examples', `${example[1]}.png`));
